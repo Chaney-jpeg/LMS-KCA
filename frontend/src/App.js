@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 import Login from './screens/Login';
@@ -15,17 +16,31 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [mobilePresentation, setMobilePresentation] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
-  // Toggle mobile presentation mode
-  const togglePresentationMode = () => {
-    setMobilePresentation(!mobilePresentation);
-    if (!mobilePresentation) {
-      document.body.classList.add('mobile-presentation');
-    } else {
-      document.body.classList.remove('mobile-presentation');
-    }
-  };
+  // Automatic device detection
+  useEffect(() => {
+    const detectDevice = () => {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isSmallScreen = window.innerWidth <= 768;
+      const shouldUseMobileView = isMobile || isSmallScreen;
+      
+      setIsMobileDevice(shouldUseMobileView);
+      
+      if (shouldUseMobileView) {
+        document.body.classList.add('mobile-presentation');
+      } else {
+        document.body.classList.remove('mobile-presentation');
+      }
+    };
+
+    // Initial detection
+    detectDevice();
+
+    // Re-detect on window resize
+    window.addEventListener('resize', detectDevice);
+    return () => window.removeEventListener('resize', detectDevice);
+  }, []);
 
   const handleLogin = async (email, password) => {
     setIsLoading(true);
@@ -86,30 +101,6 @@ function App() {
 
   return (
     <div className="phone-shell">
-      {/* Toggle button for presentation mode */}
-      <button 
-        onClick={togglePresentationMode}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 9999,
-          padding: '10px 16px',
-          background: 'var(--nv)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontSize: '13px',
-          fontWeight: '500',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-          fontFamily: 'DM Sans, sans-serif'
-        }}
-        title="Toggle between full screen and mobile presentation mode"
-      >
-        {mobilePresentation ? '📱 Mobile View' : '💻 Desktop View'}
-      </button>
-      
       {currentRole === 'ADMIN' && <AdminDashboard user={user} onLogout={handleLogout} />}
       {currentRole === 'LECTURER' && <LecturerDashboard user={user} onLogout={handleLogout} />}
       {currentRole === 'STUDENT' && <StudentDashboard user={user} onLogout={handleLogout} />}
