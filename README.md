@@ -1,4 +1,4 @@
-# KCAU LMS - Learning Management System
+# LMS-KCA - Learning Management System
 
 A comprehensive Learning Management System built with **React**, **Django REST Framework**, and **PostgreSQL**, designed for mobile-first access with automatic attendance tracking.
 
@@ -184,7 +184,7 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-Developed by Chaney - KCAU Learning Management System
+Developed by Chaney - LMS-KCA
 
 ## 🤝 Contributing
 
@@ -196,4 +196,4 @@ For questions or support, please contact the development team.
 
 ---
 
-**Note**: This is an educational project built for Kenya Coast Adventist University (KCAU).
+**Note**: This is an educational project built for Kenya School of Accountants University.

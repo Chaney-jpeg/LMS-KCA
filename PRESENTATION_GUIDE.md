@@ -1,9 +1,9 @@
-# KCAU LMS - Presentation Guide for Assessor
+# LMS-KCA - Presentation Guide for Assessor
 
 ## Quick Demo (5-10 minutes)
 
 ### 1. **Project Overview**
-Your LMS is a **Django REST Framework** backend with a **React** frontend for managing learning at KCAU. It includes:
+Your LMS is a **Django REST Framework** backend with a **React** frontend for managing learning at Kenya School of Accountants University. It includes:
 - ✅ User authentication (Students, Lecturers, Admins)
 - ✅ Course management and enrollment (252 enrollments across 8 courses)
 - ✅ Automatic attendance tracking
