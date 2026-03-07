@@ -7,7 +7,7 @@ import AdminDashboard from './screens/AdminDashboard';
 import LecturerDashboard from './screens/LecturerDashboard';
 import StudentDashboard from './screens/StudentDashboard';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api`;
 
 function App() {
   const [currentRole, setCurrentRole] = useState(null);
