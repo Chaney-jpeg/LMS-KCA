@@ -93,3 +93,6 @@ update_*.py
 list_*.py
 guarantee_*.py
 final_*.py
+
+# Keep required deploy/runtime files tracked
+!backend/requirements.txt
