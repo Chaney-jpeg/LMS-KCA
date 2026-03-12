@@ -920,8 +920,8 @@ html, body, #root {
   display: flex;
   justify-content: space-around;
   gap: 0;
-  background: linear-gradient(to bottom, rgba(201, 168, 76, 0.12) 0%, rgba(201, 168, 76, 0.08) 100%);
-  border-top: 1px solid rgba(201, 168, 76, 0.3);
+  background: linear-gradient(to bottom, rgba(201, 168, 76, 0.15) 0%, rgba(201, 168, 76, 0.1) 100%);
+  border-top: 1px solid rgba(201, 168, 76, 0.45);
   padding: 0;
   flex-shrink: 0;
 }
@@ -937,17 +937,23 @@ html, body, #root {
   transition: all 0.2s;
   border: none;
   background: transparent;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ti:last-child {
+  border-right: none;
 }
 
 .ti:hover {
-  background: linear-gradient(to bottom, rgba(201, 168, 76, 0.15) 0%, rgba(201, 168, 76, 0.1) 100%);
+  background: linear-gradient(to bottom, rgba(201, 168, 76, 0.2) 0%, rgba(201, 168, 76, 0.14) 100%);
 }
 
 .tic {
   font-size: 18px;
   margin-bottom: 4px;
   transition: all 0.2s;
-  opacity: 0.6;
+  opacity: 0.9;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 
 .tic.on {
@@ -957,10 +963,11 @@ html, body, #root {
 .tlb {
   font-size: 8px;
   font-weight: 700;
-  color: var(--tx3);
+  color: #1e1e1e;
   text-align: center;
-  opacity: 0.6;
+  opacity: 0.95;
   transition: all 0.2s;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
 }
 
 .tlb.on {
@@ -1201,5 +1208,172 @@ html, body, #root {
   body.mobile-presentation .stat-grid {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+  }
+}
+
+/* ═ KIRA CHAT UI ═ */
+.kira-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 62, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  padding: 12px;
+}
+
+.kira-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.kira-box {
+  width: min(100%, 640px);
+  height: min(86vh, 760px);
+  background: var(--wh);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--br);
+  box-shadow: 0 20px 50px rgba(13, 27, 62, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.kira-header {
+  position: relative;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--nv) 0%, var(--nv-l) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kira-header::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.kira-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  background: linear-gradient(180deg, #f9fbff 0%, var(--bg) 100%);
+}
+
+.kira-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.kira-messages::-webkit-scrollbar-thumb {
+  background: rgba(13, 27, 62, 0.18);
+  border-radius: 6px;
+}
+
+.msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 10px;
+  max-width: 92%;
+}
+
+.msg-row.user {
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+.msg-bubble {
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--br);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.msg-bubble.bot {
+  background: #fff;
+  color: var(--tx);
+  border-top-left-radius: 6px;
+}
+
+.msg-bubble.user {
+  background: var(--in);
+  color: #fff;
+  border-color: var(--in);
+  border-top-right-radius: 6px;
+}
+
+.kira-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--br);
+  background: var(--wh);
+}
+
+.kira-input textarea {
+  flex: 1;
+  border: 1px solid var(--br);
+  border-radius: 10px;
+  padding: 9px 10px;
+  font-size: 12px;
+  font-family: "DM Sans", sans-serif;
+  color: var(--tx);
+  background: #fff;
+}
+
+.kira-input textarea:focus {
+  outline: none;
+  border-color: var(--in);
+  box-shadow: 0 0 0 3px var(--in-b);
+}
+
+.kira-send {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--in);
+  background: var(--in);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.kira-send:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.kira-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .kira-modal {
+    padding: 0;
+  }
+
+  .kira-box {
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .kira-header {
+    padding-top: 52px;
   }
 }

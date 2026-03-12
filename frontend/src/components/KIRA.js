@@ -3,7 +3,7 @@ import { kiraAPI } from '../api';
 
 function KIRA({ role, onClose }) {
   const [messages, setMessages] = useState([
-    { type: 'bot', text: `Hi! I'm KIRA, your KCAU assistant. How can I help you today with your ${role.toLowerCase()} responsibilities?` }
+    { type: 'bot', text: `Hi! I'm KIRA, your LMS-KCA assistant. How can I help with your ${role.toLowerCase()} tasks today?` }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -45,28 +45,25 @@ function KIRA({ role, onClose }) {
             onClick={onClose}
             style={{
               position: 'absolute',
-              top: '12px',
-              right: '12px',
-              width: '28px',
-              height: '28px',
-              borderRadius: '14px',
-              background: 'rgba(255,255,255,.1)',
-              border: 'none',
+              top: '10px',
+              right: '10px',
+              borderRadius: '16px',
+              background: 'rgba(255,255,255,.12)',
+              border: '1px solid rgba(255,255,255,.25)',
               cursor: 'pointer',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              fontSize: '11px',
+              padding: '6px 10px',
               color: '#fff',
+              fontWeight: 700,
             }}
           >
-            ✕
+            ← Go Back
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', zIndex: 1 }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '20px', background: 'rgba(201,168,76,.15)', border: '2px solid rgba(201,168,76,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '17px' }}>🤖</div>
             <div>
               <div style={{ fontFamily: 'Playfair Display,serif', fontSize: '15px', fontWeight: 700, color: '#fff' }}>KIRA</div>
-              <div style={{ fontSize: '9px', color: 'rgba(255,255,255,.55)' }}>KCAU Intelligent Research Assistant</div>
+              <div style={{ fontSize: '9px', color: 'rgba(255,255,255,.55)' }}>LMS-KCA Intelligent Assistant</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(27,107,58,.25)', border: '1px solid rgba(74,222,128,.3)', borderRadius: '50px', padding: '3px 9px', marginLeft: 'auto' }}>
               <div style={{ width: '6px', height: '6px', borderRadius: '3px', background: '#4ade80' }}></div>

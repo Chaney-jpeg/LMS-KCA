@@ -2,6 +2,14 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
 
+
+class Department(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
 class UserProfile(models.Model):
     ROLE_CHOICES = [('ADMIN','ADMIN'),('LECTURER','LECTURER'),('STUDENT','STUDENT')]
     name = models.CharField(max_length=200)
@@ -11,6 +19,7 @@ class UserProfile(models.Model):
     status = models.CharField(max_length=20, default='active')
     reg_number = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
     created_at = models.DateTimeField(default=timezone.now)
 
     def set_password(self, raw_password):
@@ -29,9 +38,11 @@ class UserProfile(models.Model):
 class Course(models.Model):
     code = models.CharField(max_length=20)
     name = models.CharField(max_length=255)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='courses')
     lecturer = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'LECTURER'})
     enrolled_count = models.IntegerField(default=0)
     completion_percent = models.IntegerField(default=0)
+    unit_fee = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
 
     def __str__(self):
         return f"{self.code} - {self.name}"
@@ -175,3 +186,76 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.student.name} - {self.course.code} - {self.date} ({self.status})"
+
+
+class ChatMessage(models.Model):
+    sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_messages')
+    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='received_messages')
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_messages')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.sender.email} -> {self.recipient.email}"
+
+
+class ZoomClass(models.Model):
+    title = models.CharField(max_length=255)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='zoom_classes')
+    meeting_url = models.URLField()
+    meeting_code = models.CharField(max_length=100, blank=True)
+    host = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'LECTURER'})
+    scheduled_for = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['scheduled_for']
+
+    def __str__(self):
+        return f"{self.title} ({self.course.code})"
+
+
+class LecturerPlan(models.Model):
+    lecturer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='weekly_plans', limit_choices_to={'role': 'LECTURER'})
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, related_name='weekly_plans')
+    title = models.CharField(max_length=255)
+    plan_date = models.DateField()
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['plan_date', 'start_time']
+
+    def __str__(self):
+        return f"{self.lecturer.name} - {self.title}"
+
+
+class StudentTimetableEntry(models.Model):
+    ENTRY_TYPE_CHOICES = [
+        ('CLASS', 'Scheduled Class'),
+        ('ASSIGNMENT', 'Assignment Deadline'),
+        ('CAT', 'CAT / Test'),
+        ('PERSONAL', 'Personal Plan'),
+        ('EXAM', 'Exam'),
+    ]
+    student = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='timetable_entries', limit_choices_to={'role': 'STUDENT'})
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, related_name='student_timetable_entries')
+    title = models.CharField(max_length=255)
+    entry_type = models.CharField(max_length=20, choices=ENTRY_TYPE_CHOICES, default='PERSONAL')
+    entry_date = models.DateField()
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['entry_date', 'start_time']
+
+    def __str__(self):
+        return f"{self.student.name} - {self.title} ({self.entry_date})"

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Group
 from .models import (
     UserProfile, Course, Notification, LibraryItem, StudentBorrow, 
     Attendance, CourseEnrollment, CourseMaterial, StudentGrade, 
-    AssignmentSubmission, FeesPayment, EmailVerification
+    AssignmentSubmission, FeesPayment, EmailVerification, Department, ChatMessage, ZoomClass, LecturerPlan, StudentTimetableEntry
 )
 
 # Unregister default User/Group admin (Python 3.14 compatibility fix)
@@ -19,7 +19,13 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['code', 'name', 'lecturer', 'enrolled_count', 'completion_percent']
+    list_display = ['code', 'name', 'department', 'lecturer', 'unit_fee', 'enrolled_count', 'completion_percent']
+    search_fields = ['code', 'name']
+
+
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ['code', 'name']
     search_fields = ['code', 'name']
 
 @admin.register(CourseEnrollment)
@@ -58,3 +64,25 @@ admin.site.register(LibraryItem)
 admin.site.register(StudentBorrow)
 admin.site.register(Attendance)
 admin.site.register(EmailVerification)
+admin.site.register(ChatMessage)
+
+
+@admin.register(ZoomClass)
+class ZoomClassAdmin(admin.ModelAdmin):
+    list_display = ['title', 'course', 'host', 'scheduled_for']
+    list_filter = ['course']
+    search_fields = ['title', 'course__code', 'host__name']
+
+
+@admin.register(LecturerPlan)
+class LecturerPlanAdmin(admin.ModelAdmin):
+    list_display = ['title', 'lecturer', 'course', 'plan_date', 'start_time', 'end_time']
+    list_filter = ['plan_date', 'course']
+    search_fields = ['title', 'lecturer__name', 'course__code']
+
+
+@admin.register(StudentTimetableEntry)
+class StudentTimetableEntryAdmin(admin.ModelAdmin):
+    list_display = ['title', 'student', 'course', 'entry_type', 'entry_date', 'start_time']
+    list_filter = ['entry_type', 'entry_date', 'course']
+    search_fields = ['title', 'student__name', 'course__code']

@@ -6,6 +6,7 @@ import Register from './screens/Register';
 import AdminDashboard from './screens/AdminDashboard';
 import LecturerDashboard from './screens/LecturerDashboard';
 import StudentDashboard from './screens/StudentDashboard';
+import KIRA from './components/KIRA';
 
 const API_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api`;
 
@@ -16,6 +17,8 @@ function App() {
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [forcePresentationMode, setForcePresentationMode] = useState(null);
+  const [showKira, setShowKira] = useState(false);
 
   // Automatic device detection
   useEffect(() => {
@@ -23,10 +26,11 @@ function App() {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const isSmallScreen = window.innerWidth <= 768;
       const shouldUseMobileView = isMobile || isSmallScreen;
+      const finalMode = forcePresentationMode === null ? shouldUseMobileView : forcePresentationMode;
+
+      setIsMobileDevice(finalMode);
       
-      setIsMobileDevice(shouldUseMobileView);
-      
-      if (shouldUseMobileView) {
+      if (finalMode) {
         document.body.classList.add('mobile-presentation');
       } else {
         document.body.classList.remove('mobile-presentation');
@@ -39,7 +43,7 @@ function App() {
     // Re-detect on window resize
     window.addEventListener('resize', detectDevice);
     return () => window.removeEventListener('resize', detectDevice);
-  }, []);
+  }, [forcePresentationMode]);
 
   const handleLogin = async (email, password) => {
     setIsLoading(true);
@@ -67,6 +71,8 @@ function App() {
       // Login failed - show error message
       if (error.response?.status === 401) {
         setLoginError('Invalid email or password');
+      } else if (error.response?.status === 403) {
+        setLoginError(error.response?.data?.error || 'Account is disabled. Contact administration.');
       } else if (error.response?.status === 400) {
         setLoginError(error.response.data?.error || 'Email and password are required');
       } else {
@@ -82,6 +88,7 @@ function App() {
     setCurrentRole(null);
     setUser(null);
     setLoginError('');
+    setShowKira(false);
   };
 
   const handleRegisterSuccess = (email) => {
@@ -100,9 +107,34 @@ function App() {
 
   return (
     <div className="phone-shell">
+      <div style={{ position: 'fixed', bottom: '90px', right: '10px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {currentRole && (
+          <button
+            onClick={() => setShowKira(true)}
+            style={{ padding: '8px 10px', borderRadius: '16px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}
+          >
+            🤖 KIRA
+          </button>
+        )}
+        <button
+          onClick={() => {
+            if (forcePresentationMode === null) {
+              setForcePresentationMode(!isMobileDevice);
+            } else {
+              setForcePresentationMode(!forcePresentationMode);
+            }
+          }}
+          style={{ padding: '8px 10px', borderRadius: '16px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}
+        >
+          {isMobileDevice ? 'Desktop View' : 'Mobile View'}
+        </button>
+      </div>
+
       {currentRole === 'ADMIN' && <AdminDashboard user={user} onLogout={handleLogout} />}
       {currentRole === 'LECTURER' && <LecturerDashboard user={user} onLogout={handleLogout} />}
       {currentRole === 'STUDENT' && <StudentDashboard user={user} onLogout={handleLogout} />}
+
+      {showKira && currentRole && <KIRA role={currentRole} onClose={() => setShowKira(false)} />}
     </div>
   );
 }

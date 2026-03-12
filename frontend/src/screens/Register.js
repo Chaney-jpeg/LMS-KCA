@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const API_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api`;
@@ -12,11 +12,43 @@ export default function Register({ onRegisterSuccess, onBackToLogin }) {
     phone: '',
     password: '',
     password_confirm: '',
-    reg_number: ''
+    reg_number: '',
+    department_id: '',
+    selected_course_ids: []
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [departments, setDepartments] = useState([]);
+  const [departmentCourses, setDepartmentCourses] = useState([]);
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  useEffect(() => {
+    if (selectedRole === 'STUDENT' && formData.department_id) {
+      fetchDepartmentCourses(formData.department_id);
+    }
+  }, [selectedRole, formData.department_id]);
+
+  const fetchDepartments = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/departments/`);
+      setDepartments(res.data || []);
+    } catch (err) {
+      console.error('Failed to load departments', err);
+    }
+  };
+
+  const fetchDepartmentCourses = async (departmentId) => {
+    try {
+      const res = await axios.get(`${API_URL}/departments/${departmentId}/courses/`);
+      setDepartmentCourses(res.data || []);
+    } catch (err) {
+      console.error('Failed to load courses', err);
+    }
+  };
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
@@ -28,6 +60,20 @@ export default function Register({ onRegisterSuccess, onBackToLogin }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const toggleCourseSelection = (courseId) => {
+    const existing = formData.selected_course_ids || [];
+    if (existing.includes(courseId)) {
+      setFormData({ ...formData, selected_course_ids: existing.filter((id) => id !== courseId) });
+      return;
+    }
+    if (existing.length >= 6) {
+      setError('Maximum 6 courses allowed');
+      return;
+    }
+    setError('');
+    setFormData({ ...formData, selected_course_ids: [...existing, courseId] });
   };
 
   const validateForm = () => {
@@ -51,6 +97,18 @@ export default function Register({ onRegisterSuccess, onBackToLogin }) {
       setError('Registration number is required for students');
       return false;
     }
+    if (selectedRole === 'STUDENT' && !formData.department_id) {
+      setError('Department is required for students');
+      return false;
+    }
+    if (selectedRole === 'LECTURER' && !formData.department_id) {
+      setError('Department is required for lecturers');
+      return false;
+    }
+    if (selectedRole === 'STUDENT' && ((formData.selected_course_ids || []).length < 3 || (formData.selected_course_ids || []).length > 6)) {
+      setError('Select a minimum of 3 and maximum of 6 courses');
+      return false;
+    }
     return true;
   };
 
@@ -68,7 +126,9 @@ export default function Register({ onRegisterSuccess, onBackToLogin }) {
         phone: formData.phone,
         password: formData.password,
         role: selectedRole,
-        reg_number: selectedRole === 'STUDENT' ? formData.reg_number : ''
+        reg_number: selectedRole === 'STUDENT' ? formData.reg_number : '',
+        department_id: selectedRole === 'STUDENT' ? formData.department_id : null,
+        selected_course_ids: selectedRole === 'STUDENT' ? (formData.selected_course_ids || []) : []
       });
 
       if (response.status === 201) {
@@ -89,7 +149,8 @@ export default function Register({ onRegisterSuccess, onBackToLogin }) {
     if (step === 'form') {
       setStep('role');
       setSelectedRole(null);
-      setFormData({ name: '', email: '', phone: '', password: '', password_confirm: '', reg_number: '' });
+      setFormData({ name: '', email: '', phone: '', password: '', password_confirm: '', reg_number: '', department_id: '', selected_course_ids: [] });
+      setDepartmentCourses([]);
     }
     setError('');
     setMessage('');
@@ -179,15 +240,54 @@ export default function Register({ onRegisterSuccess, onBackToLogin }) {
               style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '6px', border: '1px solid #ddd', boxSizing: 'border-box', fontSize: '13px' }}
             />
 
-            {selectedRole === 'STUDENT' && (
-              <input
-                type="text"
-                name="reg_number"
-                placeholder="Registration Number"
-                value={formData.reg_number}
-                onChange={handleInputChange}
-                style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '6px', border: '1px solid #ddd', boxSizing: 'border-box', fontSize: '13px' }}
-              />
+            {(selectedRole === 'STUDENT' || selectedRole === 'LECTURER') && (
+              <>
+                {selectedRole === 'STUDENT' && (
+                  <input
+                    type="text"
+                    name="reg_number"
+                    placeholder="Registration Number"
+                    value={formData.reg_number}
+                    onChange={handleInputChange}
+                    style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '6px', border: '1px solid #ddd', boxSizing: 'border-box', fontSize: '13px' }}
+                  />
+                )}
+
+                <select
+                  name="department_id"
+                  value={formData.department_id || ''}
+                  onChange={(e) => setFormData({ ...formData, department_id: e.target.value, selected_course_ids: [] })}
+                  style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '6px', border: '1px solid #ddd', boxSizing: 'border-box', fontSize: '13px' }}
+                >
+                  <option value="">Select Department</option>
+                  {departments.map((department) => (
+                    <option key={department.id} value={department.id}>{department.name}</option>
+                  ))}
+                </select>
+
+                {selectedRole === 'STUDENT' && departmentCourses.length > 0 && (
+                  <div style={{ marginBottom: '10px', border: '1px solid #ddd', borderRadius: '6px', padding: '8px', background: '#fafafa', maxHeight: '180px', overflowY: 'auto' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, marginBottom: '6px' }}>Select 3 to 6 Courses</div>
+                    {departmentCourses.map((course) => {
+                      const selected = (formData.selected_course_ids || []).includes(course.id);
+                      return (
+                        <label key={course.id} style={{ display: 'block', fontSize: '12px', marginBottom: '4px', cursor: 'pointer', color: selected ? '#0d47a1' : '#333' }}>
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={() => toggleCourseSelection(course.id)}
+                            style={{ marginRight: '6px' }}
+                          />
+                          {course.code} - {course.name}
+                        </label>
+                      );
+                    })}
+                    <div style={{ marginTop: '6px', fontSize: '11px', color: '#666' }}>
+                      Selected: {(formData.selected_course_ids || []).length} | Semester fee preview: KES {(((formData.selected_course_ids || []).length * 10000) + 8000).toLocaleString()}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             <input
