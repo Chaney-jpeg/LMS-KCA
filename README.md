@@ -2,7 +2,7 @@
 
 A comprehensive Learning Management System built with **React**, **Django REST Framework**, and **PostgreSQL**, designed for mobile-first access with automatic attendance tracking.
 
-## 🚀 Technology Stack
+Technology Stack
 
 - **Frontend**: React 18.2.0 with Axios
 - **Backend**: Django 4.2.9 with Django REST Framework 3.20.1
@@ -10,28 +10,28 @@ A comprehensive Learning Management System built with **React**, **Django REST F
 - **Containerization**: Docker & Docker Compose
 - **Mobile**: Completely responsive, optimized for mobile devices
 
-## ✨ Key Features
+Key Features
 
-### For Students
-- 📚 **Course Enrollment & Materials** - Access lecture notes, assignments, and CATs
-- 📊 **Real-time Grade Tracking** - View grades and performance analytics
-- ✅ **Automatic Attendance** - Attendance marked when accessing course materials
-- 📝 **Assignment Submission** - Submit work directly through the platform
-- 💰 **Fee Management** - Track payments and balances
-- 🤖 **KIRA AI Assistant** - Get instant help with your questions
+For Students
+- **Course Enrollment & Materials** - Access lecture notes, assignments, and CATs
+- **Real-time Grade Tracking** - View grades and performance analytics
+- **Automatic Attendance** - Attendance marked when accessing course materials
+- **Assignment Submission** - Submit work directly through the platform
+- **Fee Management** - Track payments and balances
+- **KIRA AI Assistant** - Get instant help with your questions
 
-### For Lecturers
-- 📖 **Course Management** - Upload materials and manage course content
-- ✍️ **Grade Assignments** - Review and grade student submissions
-- 👥 **Student Tracking** - Monitor attendance and performance
-- 📋 **Attendance Reports** - View detailed attendance statistics
+For Lecturers
+- **Course Management** - Upload materials and manage course content
+- **Grade Assignments** - Review and grade student submissions
+- **Student Tracking** - Monitor attendance and performance
+- **Attendance Reports** - View detailed attendance statistics
 
-### For Admins
-- 👤 **User Management** - Manage students, lecturers, and staff
-- 📊 **System Analytics** - Track overall system usage and performance
-- 🔧 **Configuration** - System-wide settings and customization
+For Admins
+- **User Management** - Manage students, lecturers, and staff
+- **System Analytics** - Track overall system usage and performance
+- **Configuration** - System-wide settings and customization
 
-## 📁 Project Structure
+Project Structure
 
 ```
 LMS-KCA/
@@ -56,15 +56,14 @@ LMS-KCA/
 ├── docker-compose.yml          # Docker orchestration
 └── README.md
 ```
-
-## 🚀 Quick Start
+Quick Start
 
 ### Prerequisites
 - Docker & Docker Compose
 - Python 3.11+
 - Node.js 16+
 
-### Installation
+Installation
 
 1. **Clone the repository**
 ```bash
@@ -101,7 +100,7 @@ npm install
 npm start
 ```
 
-## 👥 Default Test Accounts
+Default Test Accounts
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -109,7 +108,7 @@ npm start
 | Lecturer | lecturer@kcau.edu | lecturer123 |
 | Student | student@kcau.edu | student123 |
 
-## 📚 API Documentation
+API Documentation
 
 ### Authentication
 ```http
@@ -139,14 +138,14 @@ Content-Type: application/json
 }
 ```
 
-### More Endpoints
+#More Endpoints
 - `/api/users/` - User management
 - `/api/courses/` - Course listing
 - `/api/grades/` - Grade management
 - `/api/assignments/` - Assignment submission & grading
 - `/api/attendance/summary/` - Attendance statistics
 
-## 🎨 Features in Detail
+Features in Detail
 
 ### Automatic Attendance System
 - Tracks attendance when students access course materials
@@ -163,7 +162,7 @@ Content-Type: application/json
 - Touch-friendly interface
 - Progressive Web App capabilities
 
-## 🛠️ Technology Details
+Technology Details
 
 ### Backend Stack
 - **Django 4.2.9** - Web framework
@@ -178,22 +177,18 @@ Content-Type: application/json
 - **React Hooks** - State management
 - **CSS3** - Styling with custom design system
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License.
 
-## 👨‍💻 Author
+## Author
 
 Developed by Chaney - LMS-KCA
 
-## 🤝 Contributing
+## Contributing
 
 Contributions, issues, and feature requests are welcome!
 
-## 📧 Contact
 
-For questions or support, please contact the development team.
-
----
 
 **Note**: This is an educational project built for Kenya School of Accountants University.
